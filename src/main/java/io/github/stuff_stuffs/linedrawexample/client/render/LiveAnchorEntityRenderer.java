@@ -14,6 +14,7 @@ import net.minecraft.util.math.*;
 import java.util.UUID;
 
 public class LiveAnchorEntityRenderer extends EntityRenderer<LineAnchorEntity> {
+    private static final float RADIUS = 0.25f;
     private static final Quaternion X_90_ROT = Vec3f.POSITIVE_Y.getDegreesQuaternion(90);
     private static final Vec3d UP = new Vec3d(0, 1, 0);
 
@@ -59,6 +60,8 @@ public class LiveAnchorEntityRenderer extends EntityRenderer<LineAnchorEntity> {
     private static void render(final MatrixStack matrixStack, final VertexConsumerProvider consumers, final Vec3d start, final Vec3d end, final int startLight, final int endLight) {
         final VertexConsumer consumer = consumers.getBuffer(RenderLayer.getEntitySolid(/*Your Texture here*/BeaconBlockEntityRenderer.BEAM_TEXTURE));
         final double length = end.distanceTo(start);
+        renderCap(consumer, 0, startLight, false, matrixStack);
+        renderCap(consumer, length, endLight, true, matrixStack);
         side(matrixStack, consumer, length, startLight, endLight);
         matrixStack.multiply(X_90_ROT);
         side(matrixStack, consumer, length, startLight, endLight);
@@ -68,15 +71,29 @@ public class LiveAnchorEntityRenderer extends EntityRenderer<LineAnchorEntity> {
         side(matrixStack, consumer, length, startLight, endLight);
     }
 
+    private static void renderCap(VertexConsumer vertexConsumer, double d, int light, boolean end, MatrixStack stack) {
+        final Matrix4f model = stack.peek().getPositionMatrix();
+        final Matrix3f normal = stack.peek().getNormalMatrix();
+        if(end) {
+            vertexConsumer.vertex(model, RADIUS, (float)d, -RADIUS).color(255,255,255,255).texture(0, 0).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, -RADIUS, (float)d, -RADIUS).color(255,255,255,255).texture(0, 1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, -RADIUS, (float)d, RADIUS).color(255,255,255,255).texture(1, 1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, RADIUS, (float)d, RADIUS).color(255,255,255,255).texture(1, 0).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+        } else {
+            vertexConsumer.vertex(model, RADIUS, (float)d, RADIUS).color(255,255,255,255).texture(1, 0).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, -RADIUS, (float)d, RADIUS).color(255,255,255,255).texture(0, 0).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, -RADIUS, (float)d, -RADIUS).color(255,255,255,255).texture(0, 1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+            vertexConsumer.vertex(model, RADIUS, (float)d, -RADIUS).color(255,255,255,255).texture(1, 1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+        }
+    }
+
     private static void side(final MatrixStack stack, final VertexConsumer vertexConsumer, final double length, final int lightStart, final int lightEnd) {
         final Matrix4f model = stack.peek().getPositionMatrix();
         final Matrix3f normal = stack.peek().getNormalMatrix();
-        //Radius of rope here
-        final float rad = 0.01875f;
-        vertexConsumer.vertex(model, rad, 0, -rad).color(255,255,255,255).texture(0, 0).overlay(OverlayTexture.DEFAULT_UV).light(lightStart).normal(normal, 1, 0, 0).next();
-        vertexConsumer.vertex(model, rad, (float) length, -rad).color(255,255,255,255).texture(0, 1).overlay(OverlayTexture.DEFAULT_UV).light(lightEnd).normal(normal, 1, 0, 0).next();
-        vertexConsumer.vertex(model, rad, (float) length, rad).color(255,255,255,255).texture(1, 1).overlay(OverlayTexture.DEFAULT_UV).light(lightEnd).normal(normal, 1, 0, 0).next();
-        vertexConsumer.vertex(model, rad, 0, rad).color(255,255,255,255).texture(1, 0).overlay(OverlayTexture.DEFAULT_UV).light(lightStart).normal(normal, 1, 0, 0).next();
+        vertexConsumer.vertex(model, RADIUS, 0, -RADIUS).color(255,255,255,255).texture(0, 0).overlay(OverlayTexture.DEFAULT_UV).light(lightStart).normal(normal, 1, 0, 0).next();
+        vertexConsumer.vertex(model, RADIUS, (float) length, -RADIUS).color(255,255,255,255).texture(0, 1).overlay(OverlayTexture.DEFAULT_UV).light(lightEnd).normal(normal, 1, 0, 0).next();
+        vertexConsumer.vertex(model, RADIUS, (float) length, RADIUS).color(255,255,255,255).texture(1, 1).overlay(OverlayTexture.DEFAULT_UV).light(lightEnd).normal(normal, 1, 0, 0).next();
+        vertexConsumer.vertex(model, RADIUS, 0, RADIUS).color(255,255,255,255).texture(1, 0).overlay(OverlayTexture.DEFAULT_UV).light(lightStart).normal(normal, 1, 0, 0).next();
     }
 
     @Override
