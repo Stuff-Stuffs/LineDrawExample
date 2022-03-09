@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "linedrawexample",
+  "version": "${version}",
+  "name": "LineDrawExample",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/LineDrawExample/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.stuff_stuffs.linedrawexample.client.LineDrawExampleClient"
+    ],
+    "main": [
+      "io.github.stuff_stuffs.linedrawexample.LineDrawExample"
+    ]
+  },
+  "mixins": [
+    "LineDrawExample.mixins.json"
+  ],
+  "accessWidener": "linedrawexample.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
