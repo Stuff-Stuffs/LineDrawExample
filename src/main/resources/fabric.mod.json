@@ -20,7 +20,6 @@
   "mixins": [
     "LineDrawExample.mixins.json"
   ],
-  "accessWidener": "linedrawexample.accesswidener",
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",

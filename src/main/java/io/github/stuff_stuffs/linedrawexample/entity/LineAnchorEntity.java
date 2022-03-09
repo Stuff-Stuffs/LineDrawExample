@@ -1,5 +1,7 @@
 package io.github.stuff_stuffs.linedrawexample.entity;
 
+import io.github.stuff_stuffs.linedrawexample.mixin.WorldInvoker;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -61,6 +63,18 @@ public class LineAnchorEntity extends LivingEntity {
     public ActionResult interact(final PlayerEntity player, final Hand hand) {
         dataTracker.set(HOLDER, Optional.of(player.getUuid()));
         return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public boolean shouldRender(final double cameraX, final double cameraY, final double cameraZ) {
+        final UUID holderUuid = getHolderUuid();
+        if (holderUuid != null) {
+            final Entity otherEntity = ((WorldInvoker) world).getEntityLookup().get(uuid);
+            if (otherEntity != null) {
+                return super.shouldRender(cameraX, cameraY, cameraZ) || otherEntity.shouldRender(cameraX, cameraY, cameraZ);
+            }
+        }
+        return super.shouldRender(cameraX, cameraY, cameraZ);
     }
 
     static {
